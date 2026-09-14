@@ -2,6 +2,6 @@ target/
 .idea/
 .vscode/
 *.iml
-.env
+.env.*
 .DS_Store
 hs_err_pid*
