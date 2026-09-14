@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: messatto-postgres
+    environment:
+      POSTGRES_DB: messatto
+      POSTGRES_USER: messatto
+      POSTGRES_PASSWORD: messatto
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U messatto -d messatto"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: messatto-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: messatto-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/messatto
+      SPRING_DATASOURCE_USERNAME: messatto
+      SPRING_DATASOURCE_PASSWORD: messatto
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      JWT_SECRET: messatto-compose-secret-change-me-please-32-bytes-minimum
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres-data:
