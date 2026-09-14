@@ -80,7 +80,7 @@ Swagger UI:
 http://localhost:8080/swagger-ui.html
 ```
 
-Default seeded super admin:
+Demo super admin credentials (local development only):
 
 ```text
 email: superadmin@messatto.local
